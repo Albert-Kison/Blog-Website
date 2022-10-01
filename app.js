@@ -1,5 +1,6 @@
 //jshint esversion:6
 
+// Server setup
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
@@ -16,6 +17,8 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
+
+// Setup and connect to the database
 mongoose.connect("mongodb://localhost:27017/blogDB", {useNewUrlParser: true});
 
 const postSchema = {
@@ -25,8 +28,11 @@ const postSchema = {
 
 const Post = mongoose.model("Post", postSchema);
 
+
+// Server routes
 app.get("/", function(req, res){
 
+  // Get all the posts
   Post.find({}, function(err, posts){
     res.render("home", {
       startingContent: homeStartingContent,
@@ -35,10 +41,12 @@ app.get("/", function(req, res){
   });
 });
 
+// Page for writing a blog
 app.get("/compose", function(req, res){
   res.render("compose");
 });
 
+//Add blog to the database
 app.post("/compose", function(req, res){
   const post = new Post({
     title: req.body.postTitle,
@@ -53,6 +61,7 @@ app.post("/compose", function(req, res){
   });
 });
 
+// Get a specific blog
 app.get("/posts/:postId", function(req, res){
 
 const requestedPostId = req.params.postId;
